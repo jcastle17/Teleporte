@@ -1,0 +1,6 @@
+/*
+  X-Robots-Tag: noindex
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: same-origin
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline';
