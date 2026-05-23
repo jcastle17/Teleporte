@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "name": "Teleporte Handoff",
+  "description": "Machine-readable boot instructions for AI handoff.",
+  "handoff_protocol": {
+    "entry_point": "/00_LATEST_CHECKPOINT_READ_FIRST.md",
+    "vault_path": "/downloads/CHATGPT_START_HERE_teleport_handoff_vault_latest.zip",
+    "security_policy": "No secrets, tokens, or PII. Minimalist context first.",
+    "preferred_flow": [
+      "Read 00_LATEST_CHECKPOINT_READ_FIRST.md",
+      "Parse ai-handoff.json",
+      "Request specific files or download full vault if context is insufficient"
+    ]
+  },
+  "metadata": {
+    "last_updated": "2026-05-23",
+    "status": "ready"
+  }
+}
