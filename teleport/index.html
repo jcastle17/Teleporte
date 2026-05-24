@@ -120,32 +120,39 @@
             <li>
                 <div class="step-header">
                     <span class="step-number">1</span>
-                    <span class="step-title">Initial Orientation</span>
+                    <span class="step-title">Dynamic Orientation (Primary)</span>
                 </div>
-                Read <code><a href="/00_LATEST_CHECKPOINT_READ_FIRST.md">00_LATEST_CHECKPOINT_READ_FIRST.md</a></code> first. This file contains the immediate mission context, current project state, and high-priority objectives.
+                Check <code><a href="/api/latest">/api/latest</a></code> first. This is the most current, live-updated state of the project. If this returns a 404, fallback to step 2.
             </li>
             <li>
                 <div class="step-header">
                     <span class="step-number">2</span>
-                    <span class="step-title">Machine Configuration</span>
+                    <span class="step-title">Static Configuration</span>
                 </div>
-                Read <code><a href="/ai-handoff.json">ai-handoff.json</a></code> next. This provides machine-readable boot configurations, metadata, and the preferred handoff protocol.
+                Read <code><a href="/ai-handoff.json">ai-handoff.json</a></code> and <code><a href="/00_LATEST_CHECKPOINT_READ_FIRST.md">00_LATEST_CHECKPOINT_READ_FIRST.md</a></code>. These provide the baseline metadata and initial mission context.
             </li>
             <li>
                 <div class="step-header">
                     <span class="step-number">3</span>
-                    <span class="step-title">Light-Load Principle</span>
+                    <span class="step-title">Historical Context</span>
                 </div>
-                <strong>Always use light-load first.</strong> Do not attempt to ingest the entire repository history immediately. Rely on the provided summaries and checkpoints to orient yourself before requesting deeper files.
+                If more detail on recent changes is needed, consult <code><a href="/api/logs">/api/logs</a></code> for a chronological stream of recent updates and chat logs.
             </li>
             <li>
                 <div class="step-header">
                     <span class="step-number">4</span>
                     <span class="step-title">Deep-Read Capability</span>
                 </div>
-                <strong>Deep-read only when needed.</strong> If the summaries are insufficient for your current task, you may download and analyze the full context vault.
+                <strong>Deep-read only when needed.</strong> Use the vault ZIP only for exhaustive architectural analysis or large-scale context retrieval.
                 <br><br>
                 <a href="/downloads/CHATGPT_START_HERE_teleport_handoff_vault_latest.zip" class="btn">Download Handoff Vault ZIP</a>
+            </li>
+            <li>
+                <div class="step-header">
+                    <span class="step-number">5</span>
+                    <span class="step-title">Handoff Responsibility</span>
+                </div>
+                <strong>Before ending this session:</strong> Generate a new checkpoint or chat log and submit it via the <code><a href="/admin/">Admin Intake Page</a></code> to ensure continuity for the next agent.
             </li>
         </ul>
 

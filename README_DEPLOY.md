@@ -1,30 +1,52 @@
-# Deploying Teleporte to Cloudflare Pages
+# Deploying Teleporte to Cloudflare (Worker + D1)
 
-This guide explains how to deploy this static handoff site to Cloudflare Pages.
+This guide explains how to deploy Teleporte as a self-updating handoff system.
 
 ## Prerequisites
-- A GitHub account with this repository pushed.
 - A Cloudflare account.
+- `wrangler` CLI installed and authenticated (or use the Cloudflare Dashboard).
 
-## Steps
+## 1. Create D1 Database
+Create a D1 database named `teleporte-db`:
+```bash
+npx wrangler d1 create teleporte-db
+```
+Take note of the `database_id` and update it in `wrangler.jsonc`.
 
-1. **Log in to Cloudflare Dashboard**: Go to [dash.cloudflare.com](https://dash.cloudflare.com).
-2. **Navigate to Workers & Pages**: Click on "Workers & Pages" in the sidebar.
-3. **Create a New Application**: Click "Create application" -> "Pages" -> "Connect to Git".
-4. **Select Repository**: Select the `Teleporte` repository.
-5. **Configure Build Settings**:
-    - **Project Name**: `teleporte` (or your preferred name)
-    - **Production Branch**: `main`
-    - **Framework Preset**: `None`
-    - **Build Command**: (Leave empty)
-    - **Build Output Directory**: `/` (The root directory)
-6. **Environment Variables**: None required.
-7. **Save and Deploy**: Click "Save and Deploy".
+## 2. Initialize Database Schema
+Apply the migration to create the `handoff_entries` table:
+```bash
+npx wrangler d1 migrations apply teleporte-db --remote
+```
+(For local testing, use `--local`)
 
-## Post-Deployment
-- Cloudflare will provide a `pages.dev` URL (e.g., `teleporte.pages.dev`).
-- Your site will automatically update whenever you push to the `main` branch.
+## 3. Set Update Secret
+Create a secret named `UPDATE_TOKEN` to secure the `/api/intake` endpoint:
+```bash
+npx wrangler secret put UPDATE_TOKEN
+```
+Enter a strong, private token when prompted.
 
-## Files to Update Before Use
-- Replace `00_LATEST_CHECKPOINT_READ_FIRST.md` with your actual project status.
-- Upload your `CHATGPT_START_HERE_teleport_handoff_vault_latest.zip` to the `downloads/` folder.
+## 4. Deployment
+Deploy the Worker and its static assets:
+```bash
+npx wrangler deploy
+```
+
+## 5. Usage / Test URLs
+- **Main Gateway**: `https://teleporte.<your-subdomain>.workers.dev/teleport/`
+- **Admin Intake**: `https://teleporte.<your-subdomain>.workers.dev/admin/`
+- **Latest State API**: `https://teleporte.<your-subdomain>.workers.dev/api/latest`
+- **Logs API**: `https://teleporte.<your-subdomain>.workers.dev/api/logs`
+
+## Verification
+1. Visit the `/admin/` page.
+2. Enter your `UPDATE_TOKEN`.
+3. Submit a "checkpoint" entry.
+4. Visit `/api/latest` to verify it appears.
+5. Visit `/teleport/` to see the updated instructions for future agents.
+
+## Important Notes
+- **Do not** share your `UPDATE_TOKEN`.
+- The `/api/intake` endpoint requires either a `token` in the JSON body or a Bearer token in the `Authorization` header.
+- Static assets are served from the `./public` directory.

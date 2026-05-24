@@ -1,9 +1,18 @@
 {
   "name": "teleporte",
+  "main": "src/index.js",
   "compatibility_date": "2026-05-23",
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    "binding": "ASSETS"
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "teleporte_handoff",
+      "database_id": "706c8b08-100b-4ece-aa75-ab28199f1bfd"
+    }
+  ],
   "workers_dev": true,
   "preview_urls": false,
   "observability": {
