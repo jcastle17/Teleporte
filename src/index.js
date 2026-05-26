@@ -276,9 +276,7 @@ async function handleConsolidate(request, env) {
       });
     }
 
-    const consolidatedContent = collectedLogs.map(log => log.content).join("
-
---- CONSOLIDATED ENTRY ---
+    const consolidatedContent = collectedLogs.map(log => log.content).join("\n\n--- CONSOLIDATED ENTRY ---\n\n");
 
 ");
     const checkpointTitle = `Consolidated Checkpoint - ${new Date().toISOString()}`;
