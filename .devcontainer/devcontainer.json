@@ -1,0 +1,28 @@
+{
+  "name": "Teleporte iPad Command Center",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.cwd": "${workspaceFolder}",
+        "workbench.startupEditor": "readme",
+        "workbench.editor.enablePreview": false,
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 1000,
+        "editor.wordWrap": "on"
+      },
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "postCreateCommand": "npm install -g wrangler @google/gemini-cli && npm cache clean --force && cat > /usr/local/bin/tgemini <<'EOF'\n#!/usr/bin/env bash\ngemini --model gemini-2.5-flash\nEOF\ncat > /usr/local/bin/tlogin <<'EOF'\n#!/usr/bin/env bash\nnpx wrangler login\nEOF\ncat > /usr/local/bin/twhoami <<'EOF'\n#!/usr/bin/env bash\nnpx wrangler whoami\nEOF\ncat > /usr/local/bin/tdeploy <<'EOF'\n#!/usr/bin/env bash\nnpx wrangler deploy\nEOF\ncat > /usr/local/bin/tstatus <<'EOF'\n#!/usr/bin/env bash\npwd\ngit branch --show-current\ngit status --short\ngit log --oneline -5\nEOF\ncat > /usr/local/bin/tkill <<'EOF'\n#!/usr/bin/env bash\npkill -f gemini || true\npkill -f wrangler || true\nnpm cache clean --force\nclear\necho 'Stuck Gemini/Wrangler processes cleared.'\nEOF\nchmod +x /usr/local/bin/tgemini /usr/local/bin/tlogin /usr/local/bin/twhoami /usr/local/bin/tdeploy /usr/local/bin/tstatus /usr/local/bin/tkill",
+  "postAttachCommand": "clear && echo 'TELEPORTE COMMAND CENTER READY' && echo '' && echo 'Use these short commands:' && echo 'tgemini  = launch Gemini Flash' && echo 'tlogin   = Wrangler login' && echo 'twhoami  = check Wrangler login' && echo 'tdeploy  = deploy Teleporte' && echo 'tstatus  = repo status' && echo 'tkill    = kill stuck Gemini/Wrangler' && echo '' && echo 'Open in Browser only. Do not use JupyterLab.' && echo 'When done, stop/kill the Codespace.'",
+  "remoteUser": "node"
+}
