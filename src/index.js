@@ -13,6 +13,9 @@ export default {
     if (path === "/api/intake" && request.method === "POST") {
       return handleIntake(request, env);
     }
+    if (path === "/api/current-rules") {
+      return handleCurrentRules();
+    }
 
     // Admin Page
     if (path === "/admin" || path === "/admin/") {
@@ -117,4 +120,45 @@ async function serveAdmin(env) {
   
   const adminRequest = new Request(new URL("/admin/index.html", "http://internal/"));
   return env.ASSETS.fetch(adminRequest);
+}
+
+async function handleCurrentRules() {
+  const antiVerificationLoopRule = `
+ANTI-VERIFICATION-LOOP RULE
+
+Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, Copilot, or deployment work into repeated check/build/re-check loops.
+
+The AI should:
+- assess current state once,
+- decide what is missing,
+- build or fix what is needed,
+- run one final validation at the end,
+- report what changed,
+- report what it verified,
+- report what is functional,
+- report any true blockers.
+
+Do not ask Tony to manually verify anything the AI can verify.
+
+Do not repeatedly reconfirm small steps.
+
+Do not pause after every minor check.
+
+Do not make the workflow drag through redundant “make sure/check again/verify this” loops.
+
+Stop only for true blockers:
+- secrets/tokens/passwords/API keys,
+- billing/payment,
+- DNS/custom domains,
+- destructive commands,
+- force push,
+- unresolved merge conflicts,
+- missing permissions,
+- major ambiguous decisions.
+
+This rule outranks older workflow instructions if they conflict.
+`;
+  return new Response(JSON.stringify({ rule: antiVerificationLoopRule }), {
+    headers: { "Content-Type": "application/json" }
+  });
 }

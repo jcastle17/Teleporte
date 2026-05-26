@@ -3,151 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teleporte Admin | Intake</title>
+    <title>Teleporte Admin</title>
     <style>
-        :root {
-            --primary: #0070f3;
-            --primary-hover: #0051ad;
-            --bg: #f8f9fa;
-            --card-bg: #ffffff;
-            --text: #1a1a1a;
-            --border: #eaeaea;
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: var(--bg); 
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border-top: 6px solid var(--primary);
-        }
-        h1 { margin-top: 0; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; }
-        input[type="text"], input[type="password"], select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-        textarea { height: 200px; font-family: monospace; }
-        .checkbox-group { display: flex; align-items: center; gap: 10px; }
-        .checkbox-group input { width: auto; }
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-        }
-        button:hover { background: var(--primary-hover); }
-        #status { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; }
-        .success { background: #e6fffa; color: #234e52; border: 1px solid #b2f5ea; }
-        .error { background: #fff5f5; color: #851414; border: 1px solid #feb2b2; }
+        body { font-family: sans-serif; margin: 2em; line-height: 1.6; }
+        h1 { color: #333; }
+        p { color: #555; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Teleporte Admin Intake</h1>
-        <form id="intakeForm">
-            <div class="form-group">
-                <label for="type">Entry Type</label>
-                <select id="type" required>
-                    <option value="checkpoint">Latest Checkpoint</option>
-                    <option value="log">Chat Log</option>
-                    <option value="pending_task">Pending Task Update</option>
-                    <option value="next_action">Next Action Update</option>
-                    <option value="note">Notes</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" id="title" placeholder="e.g., Post-Refactor State">
-            </div>
-            <div class="form-group">
-                <label for="content">Content (Markdown preferred)</label>
-                <textarea id="content" required placeholder="Paste your update here..."></textarea>
-            </div>
-            <div class="form-group">
-                <label for="tags">Tags (comma separated)</label>
-                <input type="text" id="tags" placeholder="refactor, bugfix, feature-x">
-            </div>
-            <div class="form-group">
-                <label for="source_chat">Source Chat URL/ID</label>
-                <input type="text" id="source_chat">
-            </div>
-            <div class="form-group">
-                <label for="confidence_level">Confidence Level (0-100)</label>
-                <input type="text" id="confidence_level" placeholder="95">
-            </div>
-            <div class="form-group checkbox-group">
-                <input type="checkbox" id="supersedes_previous">
-                <label for="supersedes_previous">Supersedes Previous (Mark as Latest)</label>
-            </div>
-            <div class="form-group">
-                <label for="token">Update Token</label>
-                <input type="password" id="token" required placeholder="Enter UPDATE_TOKEN">
-            </div>
-            <button type="submit">Submit Update</button>
-        </form>
-        <div id="status"></div>
-    </div>
-
-    <script>
-        document.getElementById('intakeForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const status = document.getElementById('status');
-            status.style.display = 'none';
-            
-            const data = {
-                type: document.getElementById('type').value,
-                title: document.getElementById('title').value,
-                content: document.getElementById('content').value,
-                tags: document.getElementById('tags').value,
-                source_chat: document.getElementById('source_chat').value,
-                confidence_level: document.getElementById('confidence_level').value,
-                supersedes_previous: document.getElementById('supersedes_previous').checked,
-
-            };
-
-            try {
-                const response = await fetch('/api/intake', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    status.textContent = 'Success! Update accepted.';
-                    status.className = 'success';
-                    status.style.display = 'block';
-                    document.getElementById('content').value = '';
-                } else {
-                    status.textContent = 'Error: ' + (result.error || 'Unknown error');
-                    status.className = 'error';
-                    status.style.display = 'block';
-                }
-            } catch (err) {
-                status.textContent = 'Network error: ' + err.message;
-                status.className = 'error';
-                status.style.display = 'block';
-            }
-        });
-    </script>
+    <h1>Teleporte Admin Page</h1>
+    <p>This is a placeholder for the Teleporte administration interface.</p>
+    <p>Functionality to manage handoff entries will be added here.</p>
 </body>
 </html>

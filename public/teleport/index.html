@@ -116,31 +116,72 @@
             <strong>Boot Protocol:</strong> Please follow the steps below in sequence to ensure a successful state synchronization.
         </div>
 
+        <div class="info-box">
+            <h3>ANTI-VERIFICATION-LOOP RULE</h3>
+            <p>Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, Copilot, or deployment work into repeated check/build/re-check loops.</p>
+            <p>The AI should:
+                <ul>
+                    <li>assess current state once,</li>
+                    <li>decide what is missing,</li>
+                    <li>build or fix what is needed,</li>
+                    <li>run one final validation at the end,</li>
+                    <li>report what changed,</li>
+                    <li>report what it verified,</li>
+                    <li>report what is functional,</li>
+                    <li>report any true blockers.</li>
+                </ul>
+            </p>
+            <p>Do not ask Tony to manually verify anything the AI can verify.</p>
+            <p>Do not repeatedly reconfirm small steps.</p>
+            <p>Do not pause after every minor check.</p>
+            <p>Do not make the workflow drag through redundant “make sure/check again/verify this” loops.</p>
+            <p>Stop only for true blockers:
+                <ul>
+                    <li>secrets/tokens/passwords/API keys,</li>
+                    <li>billing/payment,</li>
+                    <li>DNS/custom domains,</li>
+                    <li>destructive commands,</li>
+                    <li>force push,</li>
+                    <li>unresolved merge conflicts,</li>
+                    <li>missing permissions,</li>
+                    <li>major ambiguous decisions.</li>
+                </ul>
+            </p>
+            <p>This rule outranks older workflow instructions if they conflict.</p>
+        </div>
+
         <ul class="step-list">
             <li>
                 <div class="step-header">
                     <span class="step-number">1</span>
-                    <span class="step-title">Dynamic Orientation (Primary)</span>
+                    <span class="step-title">Current Rules</span>
                 </div>
-                Check <code><a href="/api/latest">/api/latest</a></code> first. This is the most current, live-updated state of the project. If this returns a 404, fallback to step 2.
+                Review the current operational rules, especially the ANTI-VERIFICATION-LOOP RULE, at <code><a href="/api/current-rules">/api/current-rules</a></code>.
             </li>
             <li>
                 <div class="step-header">
                     <span class="step-number">2</span>
+                    <span class="step-title">Dynamic Orientation (Primary)</span>
+                </div>
+                Check <code><a href="/api/latest">/api/latest</a></code> first. This is the most current, live-updated state of the project. If this returns a 404, fallback to step 3.
+            </li>
+            <li>
+                <div class="step-header">
+                    <span class="step-number">3</span>
                     <span class="step-title">Static Configuration</span>
                 </div>
                 Read <code><a href="/ai-handoff.json">ai-handoff.json</a></code> and <code><a href="/00_LATEST_CHECKPOINT_READ_FIRST.md">00_LATEST_CHECKPOINT_READ_FIRST.md</a></code>. These provide the baseline metadata and initial mission context.
             </li>
             <li>
                 <div class="step-header">
-                    <span class="step-number">3</span>
+                    <span class="step-number">4</span>
                     <span class="step-title">Historical Context</span>
                 </div>
                 If more detail on recent changes is needed, consult <code><a href="/api/logs">/api/logs</a></code> for a chronological stream of recent updates and chat logs.
             </li>
             <li>
                 <div class="step-header">
-                    <span class="step-number">4</span>
+                    <span class="step-number">5</span>
                     <span class="step-title">Deep-Read Capability</span>
                 </div>
                 <strong>Deep-read only when needed.</strong> Use the vault ZIP only for exhaustive architectural analysis or large-scale context retrieval.
@@ -149,7 +190,7 @@
             </li>
             <li>
                 <div class="step-header">
-                    <span class="step-number">5</span>
+                    <span class="step-number">6</span>
                     <span class="step-title">Handoff Responsibility</span>
                 </div>
                 <strong>Before ending this session:</strong> Generate a new checkpoint or chat log and submit it via the <code><a href="/admin/">Admin Intake Page</a></code> to ensure continuity for the next agent.
