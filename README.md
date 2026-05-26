@@ -2,6 +2,11 @@
 
 Teleporte is a minimalist, secure, and highly efficient ChatGPT handoff and teleportation gateway. It is designed to facilitate the seamless transfer of project context between AI sessions while maintaining strict privacy and security standards.
 
+## Security
+
+### NO-VIEW SECRET MODE
+For any secret or token exclusively required by the Cloudflare Worker/API, Gemini will securely generate and store it directly in Cloudflare secrets. The value will never be displayed, stored in version control, or exposed through any logs or public assets. Reports will only confirm the existence and Cloudflare storage status of such secrets.
+
 ## Purpose
 The primary goal of Teleporte is to provide a standardized "boot" sequence for AI agents entering a project environment. By following a structured protocol (Light-Load First), AI agents can quickly orient themselves without being overwhelmed by unnecessary data.
 
