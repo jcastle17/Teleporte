@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teleporte Collect Logs</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; line-height: 1.6; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #0056b3; }
+        label { display: block; margin-bottom: 0.5em; font-weight: bold; }
+        input[type="text"], textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 1em;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea { min-height: 150px; resize: vertical; }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover { background-color: #0056b3; }
+        .message { margin-top: 1em; padding: 10px; border-radius: 4px; }
+        .message.success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .message.error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Collect Messy/Old Chat Data</h1>
+        <form id="collectForm">
+            <label for="token">Update Token:</label>
+            <input type="text" id="token" name="token" required>
+
+            <label for="title">Title (Optional):</label>
+            <input type="text" id="title" name="title">
+
+            <label for="content">Content (Required):</label>
+            <textarea id="content" name="content" required></textarea>
+
+            <label for="tags">Tags (Comma-separated, Optional):</label>
+            <input type="text" id="tags" name="tags">
+
+            <label for="source_chat">Source Chat (Optional):</label>
+            <input type="text" id="source_chat" name="source_chat">
+
+            <label for="confidence_level">Confidence Level (Optional):</label>
+            <input type="text" id="confidence_level" name="confidence_level">
+
+            <button type="submit">Submit Log</button>
+        </form>
+        <div id="responseMessage" class="message" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('collectForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const responseMessageDiv = document.getElementById('responseMessage');
+            responseMessageDiv.style.display = 'none';
+            responseMessageDiv.classList.remove('success', 'error');
+
+            const token = document.getElementById('token').value;
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const tags = document.getElementById('tags').value;
+            const source_chat = document.getElementById('source_chat').value;
+            const confidence_level = document.getElementById('confidence_level').value;
+
+            const payload = {
+                token: token,
+                type: 'collected_log',
+                title: title || null,
+                content: content,
+                tags: tags || null,
+                source_chat: source_chat || null,
+                confidence_level: confidence_level || null,
+                supersedes_previous: false // Collected logs don't supersede by default
+            };
+
+            try {
+                const response = await fetch('/api/collect-log', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    responseMessageDiv.classList.add('success');
+                    responseMessageDiv.textContent = 'Log collected successfully! ID: ' + data.id; // Assuming API returns ID
+                    document.getElementById('collectForm').reset(); // Clear form on success
+                } else {
+                    responseMessageDiv.classList.add('error');
+                    responseMessageDiv.textContent = 'Error: ' + (data.error || 'Unknown error');
+                }
+            } catch (error) {
+                responseMessageDiv.classList.add('error');
+                responseMessageDiv.textContent = 'Network error: ' + error.message;
+            } finally {
+                responseMessageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
