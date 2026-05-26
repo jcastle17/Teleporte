@@ -17,5 +17,10 @@
   "preview_urls": false,
   "observability": {
     "enabled": true
+  },
+  "triggers": {
+    "crons": [
+      "*/30 * * * *" // Run consolidation every 30 minutes
+    ]
   }
 }

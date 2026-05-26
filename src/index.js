@@ -41,7 +41,39 @@ export default {
 
     // Fallback to static assets
     return env.ASSETS.fetch(request);
-  }
+  },
+  async scheduled(controller, env, ctx) {
+    console.log(`[ScheduledConsolidate] Triggered by cron: ${controller.cron}`);
+
+    const token = env.UPDATE_TOKEN;
+    if (!token) {
+      console.error("[ScheduledConsolidate] UPDATE_TOKEN is not set. Cannot run consolidation.");
+      return;
+    }
+
+    // Simulate a request object for handleConsolidate
+    const mockRequest = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }),
+      json: async () => ({ token: token }) // Provide a mock json body
+    };
+
+    try {
+      const consolidateResponse = await handleConsolidate(mockRequest, env);
+      const result = await consolidateResponse.json();
+
+      if (consolidateResponse.ok) {
+        console.log(`[ScheduledConsolidate] Consolidation successful:`, result);
+      } else {
+        console.error(`[ScheduledConsolidate] Consolidation failed:`, result);
+      }
+    } catch (e) {
+      console.error(`[ScheduledConsolidate] Error during scheduled consolidation:`, e);
+    }
+  },
 };
 
 async function handleLatest(env) {
@@ -167,7 +199,28 @@ async function handleCollectLog(request, env) {
       supersedes_previous ? 1 : 0
     ).run();
 
-    return new Response(JSON.stringify({ success: true, id: lastRowId }), {
+    let finalContent = content;
+
+    // Auto-organize if GEMINI_API_KEY is available
+    if (env.GEMINI_API_KEY) {
+      try {
+        const organizedResponse = await handleOrganizeLogInternal({ content: content }, env);
+        if (organizedResponse.success) {
+          finalContent = organizedResponse.organizedContent;
+          await env.DB.prepare(`
+            UPDATE handoff_entries
+            SET content = ?
+            WHERE id = ?
+          `).bind(finalContent, lastRowId).run();
+        } else {
+          console.error("Auto-organization failed:", organizedResponse.error);
+        }
+      } catch (e) {
+        console.error("Error during auto-organization:", e);
+      }
+    }
+
+    return new Response(JSON.stringify({ success: true, id: lastRowId, organized: !!env.GEMINI_API_KEY }), {
       headers: { "Content-Type": "application/json" }
     });
   } catch (e) {
@@ -213,14 +266,15 @@ async function handleConsolidate(request, env) {
   }
 
   try {
+    // Select only unprocessed collected logs
     const { results: collectedLogs } = await env.DB.prepare(`
-      SELECT content FROM handoff_entries
+      SELECT id, content FROM handoff_entries
       WHERE type = 'collected_log'
       ORDER BY created_at ASC
     `).all();
 
     if (collectedLogs.length === 0) {
-      return new Response(JSON.stringify({ message: "No collected logs to consolidate." }), {
+      return new Response(JSON.stringify({ message: "No new collected logs to consolidate." }), {
         status: 200,
         headers: { "Content-Type": "application/json" }
       });
@@ -243,12 +297,66 @@ async function handleConsolidate(request, env) {
       1 // supersedes_previous
     ).run();
 
+    // Delete processed logs
+    const collectedLogIds = collectedLogs.map(log => log.id);
+    if (collectedLogIds.length > 0) {
+        const placeholders = collectedLogIds.map(() => '?').join(', ');
+        await env.DB.prepare(`
+            DELETE FROM handoff_entries
+            WHERE id IN (${placeholders})
+        `).bind(...collectedLogIds).run();
+    }
+
     return new Response(JSON.stringify({ success: true, checkpointId: lastRowId, message: "Logs consolidated into a new checkpoint." }), {
       headers: { "Content-Type": "application/json" }
     });
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500 });
   }
+}
+
+// Internal helper to call handleOrganizeLog without re-authenticating
+async function handleOrganizeLogInternal(body, env) {
+  const geminiApiKey = env.GEMINI_API_KEY;
+  if (!geminiApiKey) {
+    return { success: false, error: "GEMINI_API_KEY is not set." };
+  }
+
+  const { content: rawLogContent } = body;
+  if (!rawLogContent) {
+    return { success: false, error: "Missing 'content' in request body." };
+  }
+
+  const prompt = `Organize the following messy chat log into clear, concise, and structured bullet points or a summary. Focus on key information, decisions, and action items. If possible, identify the core subject. Keep the output strictly in markdown format.
+
+Messy Log:
+${rawLogContent}
+
+Organized Log:`;
+
+  const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }]
+    })
+  });
+
+  const geminiData = await geminiResponse.json();
+
+  if (!geminiResponse.ok || !geminiData.candidates || geminiData.candidates.length === 0) {
+    console.error("Gemini API error:", geminiData);
+    return { success: false, error: "Failed to get organized content from Gemini API.", details: geminiData };
+  }
+
+  const organizedContent = geminiData.candidates[0].content.parts[0].text;
+  return { success: true, organizedContent: organizedContent };
 }
 
 async function handleOrganizeLog(request, env) {
@@ -271,56 +379,13 @@ async function handleOrganizeLog(request, env) {
     });
   }
 
-  const geminiApiKey = env.GEMINI_API_KEY;
-  if (!geminiApiKey) {
-    return new Response(JSON.stringify({ error: "GEMINI_API_KEY is not set. Please configure the environment variable to use this feature." }), {
-      status: 500,
+  const result = await handleOrganizeLogInternal(body, env);
+  if (result.success) {
+    return new Response(JSON.stringify(result), {
       headers: { "Content-Type": "application/json" }
     });
-  }
-
-  try {
-    const { content: rawLogContent } = body;
-    if (!rawLogContent) {
-      return new Response(JSON.stringify({ error: "Missing 'content' in request body." }), { status: 400 });
-    }
-
-    const prompt = `Organize the following messy chat log into clear, concise, and structured bullet points or a summary. Focus on key information, decisions, and action items. If possible, identify the core subject. Keep the output strictly in markdown format.
-
-Messy Log:
-${rawLogContent}
-
-Organized Log:`;
-
-    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }]
-      })
-    });
-
-    const geminiData = await geminiResponse.json();
-
-    if (!geminiResponse.ok || !geminiData.candidates || geminiData.candidates.length === 0) {
-      console.error("Gemini API error:", geminiData);
-      return new Response(JSON.stringify({ error: "Failed to get organized content from Gemini API.", details: geminiData }), { status: 500 });
-    }
-
-    const organizedContent = geminiData.candidates[0].content.parts[0].text;
-
-    return new Response(JSON.stringify({ success: true, organizedContent: organizedContent }), {
-      headers: { "Content-Type": "application/json" }
-    });
-  } catch (e) {
-    console.error("Error in handleOrganizeLog:", e);
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+  } else {
+    return new Response(JSON.stringify(result), { status: 500 });
   }
 }
 
@@ -335,7 +400,7 @@ async function handleCurrentRules(env) {
     const rulesResponse = await env.ASSETS.fetch(rulesRequest);
     const rulesText = await rulesResponse.text();
 
-    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE\n\n([\s\S]*?)\n\n## 📅 Handoff Date:/;
+    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE\n\n([\s\S]*?)\n\n## \uD83D\uDCC5 Handoff Date:/;
     const match = rulesText.match(antiVerificationLoopRuleRegex);
 
     if (match && match[1]) {
