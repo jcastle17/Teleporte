@@ -396,11 +396,7 @@ async function handleCurrentRules(env) {
     const rulesResponse = await env.ASSETS.fetch(rulesRequest);
     const rulesText = await rulesResponse.text();
 
-    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE
-
-([\s\S]*?)
-
-## \uD83D\uDCC5 Handoff Date:/;
+    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE\\n\\n([\\s\\S]*?)\\n\\n## \\uD83D\\uDCC5 Handoff Date:/;
     const match = rulesText.match(antiVerificationLoopRuleRegex);
 
     if (match && match[1]) {
