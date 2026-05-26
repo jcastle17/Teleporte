@@ -172,7 +172,7 @@ async function handleCollectLog(request, env) {
   }
 
   try {
-    const { title, content, tags, source_chat, confidence_level } = body;
+    let { title, content, tags, source_chat, confidence_level } = body;
     // Ensure type is 'collected_log' for this endpoint
     const type = 'collected_log';
     const supersedes_previous = false; // Collected logs don't supersede by default
