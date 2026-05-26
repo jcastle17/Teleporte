@@ -161,21 +161,12 @@ async function handleIntake(request, env) {
 }
 
 async function handleCollectLog(request, env) {
-  const token = env.UPDATE_TOKEN;
-  if (!token) {
-    return new Response(JSON.stringify({ error: "UPDATE_TOKEN setup error. Please set the secret." }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-
-  const authHeader = request.headers.get("Authorization");
   const body = await request.json();
-  const requestToken = body.token || (authHeader && authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null);
 
-  if (requestToken !== token) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
+  // Basic abuse protection for public submissions
+  if (!body.content || typeof body.content !== 'string' || body.content.trim().length === 0) {
+    return new Response(JSON.stringify({ error: "Content field is required and cannot be empty." }), {
+      status: 400,
       headers: { "Content-Type": "application/json" }
     });
   }
@@ -185,6 +176,11 @@ async function handleCollectLog(request, env) {
     // Ensure type is 'collected_log' for this endpoint
     const type = 'collected_log';
     const supersedes_previous = false; // Collected logs don't supersede by default
+    let newTags = tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : [];
+    if (!newTags.includes('public-submission')) {
+      newTags.push('public-submission');
+    }
+    tags = newTags.join(',');
 
     const { lastRowId } = await env.DB.prepare(`
       INSERT INTO handoff_entries (type, title, content, tags, source_chat, confidence_level, supersedes_previous)
@@ -193,7 +189,7 @@ async function handleCollectLog(request, env) {
       type,
       title || null,
       content,
-      tags || null,
+      tags || null, // Use the modified tags
       source_chat || null,
       confidence_level || null,
       supersedes_previous ? 1 : 0
@@ -269,7 +265,7 @@ async function handleConsolidate(request, env) {
     // Select only unprocessed collected logs
     const { results: collectedLogs } = await env.DB.prepare(`
       SELECT id, content FROM handoff_entries
-      WHERE type = 'collected_log'
+      WHERE type = 'collected_log' AND (tags IS NULL OR tags NOT LIKE '%public-submission%')
       ORDER BY created_at ASC
     `).all();
 
@@ -280,7 +276,11 @@ async function handleConsolidate(request, env) {
       });
     }
 
-    const consolidatedContent = collectedLogs.map(log => log.content).join("\n\n--- CONSOLIDATED ENTRY ---\n\n");
+    const consolidatedContent = collectedLogs.map(log => log.content).join("
+
+--- CONSOLIDATED ENTRY ---
+
+");
     const checkpointTitle = `Consolidated Checkpoint - ${new Date().toISOString()}`;
 
     // Insert new checkpoint
@@ -400,7 +400,11 @@ async function handleCurrentRules(env) {
     const rulesResponse = await env.ASSETS.fetch(rulesRequest);
     const rulesText = await rulesResponse.text();
 
-    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE\n\n([\s\S]*?)\n\n## \uD83D\uDCC5 Handoff Date:/;
+    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE
+
+([\s\S]*?)
+
+## \uD83D\uDCC5 Handoff Date:/;
     const match = rulesText.match(antiVerificationLoopRuleRegex);
 
     if (match && match[1]) {
