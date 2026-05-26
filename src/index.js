@@ -14,7 +14,7 @@ export default {
       return handleIntake(request, env);
     }
     if (path === "/api/current-rules") {
-      return handleCurrentRules();
+      return handleCurrentRules(env);
     }
 
     // Admin Page
@@ -122,43 +122,26 @@ async function serveAdmin(env) {
   return env.ASSETS.fetch(adminRequest);
 }
 
-async function handleCurrentRules() {
-  const antiVerificationLoopRule = `
-ANTI-VERIFICATION-LOOP RULE
+async function handleCurrentRules(env) {
+  try {
+    const rulesRequest = new Request(new URL("/00_LATEST_CHECKPOINT_READ_FIRST.md", "http://internal/"));
+    const rulesResponse = await env.ASSETS.fetch(rulesRequest);
+    const rulesText = await rulesResponse.text();
 
-Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, Copilot, or deployment work into repeated check/build/re-check loops.
+    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE\n\n([\s\S]*?)\n\n## 📅 Handoff Date:/;
+    const match = rulesText.match(antiVerificationLoopRuleRegex);
 
-The AI should:
-- assess current state once,
-- decide what is missing,
-- build or fix what is needed,
-- run one final validation at the end,
-- report what changed,
-- report what it verified,
-- report what is functional,
-- report any true blockers.
-
-Do not ask Tony to manually verify anything the AI can verify.
-
-Do not repeatedly reconfirm small steps.
-
-Do not pause after every minor check.
-
-Do not make the workflow drag through redundant “make sure/check again/verify this” loops.
-
-Stop only for true blockers:
-- secrets/tokens/passwords/API keys,
-- billing/payment,
-- DNS/custom domains,
-- destructive commands,
-- force push,
-- unresolved merge conflicts,
-- missing permissions,
-- major ambiguous decisions.
-
-This rule outranks older workflow instructions if they conflict.
-`;
-  return new Response(JSON.stringify({ rule: antiVerificationLoopRule }), {
-    headers: { "Content-Type": "application/json" }
-  });
+    if (match && match[1]) {
+      return new Response(JSON.stringify({ rule: match[1].trim() }), {
+        headers: { "Content-Type": "application/json" }
+      });
+    } else {
+      return new Response(JSON.stringify({ error: "Anti-Verification-Loop Rule not found in 00_LATEST_CHECKPOINT_READ_FIRST.md" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+  }
 }
