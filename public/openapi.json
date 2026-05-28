@@ -1,9 +1,9 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
     "title": "Teleporte API",
     "version": "1.0.0",
-    "description": "API for collecting and managing chat logs for the Teleporte system."
+    "description": "API for saving chat logs into the Teleporte system."
   },
   "servers": [
     {
@@ -13,9 +13,9 @@
   "paths": {
     "/api/collect-log": {
       "post": {
-        "summary": "Submit a new log",
-        "description": "Submits a new chat log or piece of information to be collected and processed later.",
         "operationId": "submitLog",
+        "summary": "Submit a chat log to Teleporte",
+        "description": "Saves a chat log or handoff note into the Teleporte system.",
         "requestBody": {
           "required": true,
           "content": {
@@ -23,59 +23,23 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "content": {
-                    "type": "string",
-                    "description": "The full content of the log being submitted. This is the primary data."
-                  },
                   "title": {
                     "type": "string",
-                    "description": "An optional title for the submission."
+                    "description": "Short title for the chat log."
                   },
-                  "source_chat": {
+                  "content": {
                     "type": "string",
-                    "description": "Optional field to describe the source of the log, e.g., 'ChatGPT Session with Gemini'."
-                  },
-                  "tags": {
-                    "type": "string",
-                    "description": "Optional comma-separated list of tags."
-                  },
-                  "confidence_level": {
-                    "type": "string",
-                    "description": "Optional confidence level (e.g., 'High', 'Medium', 'Low')."
+                    "description": "The complete chat log, handoff log, or markdown content to save."
                   }
                 },
-                "required": ["content"]
+                "required": ["title", "content"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Log submitted successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "organized": {
-                        "type": "boolean"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Missing required content."
-          },
-          "500": {
-            "description": "Internal Server Error."
+            "description": "Log submitted successfully."
           }
         }
       }
