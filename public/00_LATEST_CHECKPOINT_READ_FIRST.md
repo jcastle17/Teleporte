@@ -1,6 +1,6 @@
 # 🏁 LATEST CHECKPOINT: [PROJECT NAME]
 
-> **IMPORTANT:** This is the primary entry point for AI agents. Read this file in its entirety before proceeding to deeper project layers.
+> **IMPORTANT:** This file is the canonical source of truth. If another route, log, checkpoint, or generated summary conflicts with this file, this file wins. This is the primary entry point for AI agents. Read this file in its entirety before proceeding to deeper project layers.
 
 ### ANTI-VERIFICATION-LOOP RULE
 

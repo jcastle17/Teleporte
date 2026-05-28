@@ -78,23 +78,12 @@ export default {
 
 async function handleLatest(env) {
   try {
-    // Return newest entry where supersedes_previous is true,
-    // or newest checkpoint entry if available.
-    const result = await env.DB.prepare(`
-      SELECT * FROM handoff_entries
-      WHERE supersedes_previous = 1 OR type = 'checkpoint'
-      ORDER BY created_at DESC LIMIT 1
-    `).first();
+    const rulesRequest = new Request(new URL("/00_LATEST_CHECKPOINT_READ_FIRST.md", "http://internal/"));
+    const rulesResponse = await env.ASSETS.fetch(rulesRequest);
+    const rulesText = await rulesResponse.text();
 
-    if (!result) {
-      return new Response(JSON.stringify({ message: "No entries found. Use /ai-handoff.json as fallback." }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
-    return new Response(JSON.stringify(result), {
-      headers: { "Content-Type": "application/json" }
+    return new Response(rulesText, {
+      headers: { "Content-Type": "text/markdown" }
     });
   } catch (e) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500 });
@@ -276,7 +265,7 @@ async function handleConsolidateInternal(env) {
       'consolidated,auto-generated', // tags
       'system:consolidate', // source_chat
       'high', // confidence_level
-      1 // supersedes_previous
+      0 // supersedes_previous (no longer supersedes the main source of truth)
     ).run();
 
     // Delete processed logs

@@ -116,39 +116,7 @@
             <strong>Boot Protocol:</strong> Please follow the steps below in sequence to ensure a successful state synchronization.
         </div>
 
-        <div class="info-box">
-            <h3>ANTI-VERIFICATION-LOOP RULE</h3>
-            <p>Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, Copilot, or deployment work into repeated check/build/re-check loops.</p>
-            <p>The AI should:
-                <ul>
-                    <li>assess current state once,</li>
-                    <li>decide what is missing,</li>
-                    <li>build or fix what is needed,</li>
-                    <li>run one final validation at the end,</li>
-                    <li>report what changed,</li>
-                    <li>report what it verified,</li>
-                    <li>report what is functional,</li>
-                    <li>report any true blockers.</li>
-                </ul>
-            </p>
-            <p>Do not ask Tony to manually verify anything the AI can verify.</p>
-            <p>Do not repeatedly reconfirm small steps.</p>
-            <p>Do not pause after every minor check.</p>
-            <p>Do not make the workflow drag through redundant “make sure/check again/verify this” loops.</p>
-            <p>Stop only for true blockers:
-                <ul>
-                    <li>secrets/tokens/passwords/API keys,</li>
-                    <li>billing/payment,</li>
-                    <li>DNS/custom domains,</li>
-                    <li>destructive commands,</li>
-                    <li>force push,</li>
-                    <li>unresolved merge conflicts,</li>
-                    <li>missing permissions,</li>
-                    <li>major ambiguous decisions.</li>
-                </ul>
-            </p>
-            <p>This rule outranks older workflow instructions if they conflict.</p>
-        </div>
+        <div id="source-of-truth-content" class="info-box">Loading latest rules from 00_LATEST_CHECKPOINT_READ_FIRST.md...</div>
 
         <ul class="step-list">
             <li>
@@ -204,6 +172,36 @@
 
         <p class="footer-note">Efficiency is paramount. Contextualize locally, verify often, and maintain the integrity of the light-load principle.</p>
     </div>
+    <script>
+        // Basic Markdown to HTML converter
+        function markdownToHtml(markdown) {
+            let html = markdown
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                .replace(/^- (.*$)/gim, '<li>$1</li>')
+                .replace(/^\s*\n<li>/gim, '<ul>\n<li>')
+                .replace(/<\/li>\n<\/ul>/gim, '<\/li>\n<\/ul>\n')
+                .replace(/`(.*?)`/gim, '<code>$1</code>')
+                .replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>');
+            return html;
+        }
+
+        async function loadSourceOfTruth() {
+            const response = await fetch('/00_LATEST_CHECKPOINT_READ_FIRST.md');
+            if (response.ok) {
+                const markdown = await response.text();
+                document.getElementById('source-of-truth-content').innerHTML = markdownToHtml(markdown);
+            } else {
+                document.getElementById('source-of-truth-content').innerHTML = '<div class="warning-box">Error loading 00_LATEST_CHECKPOINT_READ_FIRST.md. Please check the file path.</div>';
+            }
+        }
+
+        loadSourceOfTruth();
+    </script>
 </body>
 </html>
 
