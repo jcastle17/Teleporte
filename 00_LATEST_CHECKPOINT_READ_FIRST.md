@@ -4,10 +4,12 @@
 
 ### ANTI-VERIFICATION-LOOP RULE
 
-Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, Copilot, or deployment work into repeated check/build/re-check loops.
+Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, Copilot, or deployment work into repeated check/build/re-check loops. 
+
+
 
 The AI should:
-- assess current state once,
+- assess current state,
 - decide what is missing,
 - build or fix what is needed, ENHANCE IF POSSIBLE, 
 - run one final validation at the end,
@@ -25,6 +27,8 @@ Do not ask Tony to manually verify anything the AI can verify.
 Do not repeatedly reconfirm small steps.
 
 Do not pause after every minor check.
+
+do not tell ton he cannot give geminitokens 
 
 Do not make the workflow drag through redundant “make sure/check again/verify this” loops.
 
