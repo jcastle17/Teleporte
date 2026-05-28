@@ -1,40 +1,85 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Teleporte Gateway</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Teleporte Command Center</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; background: #0b0f14; color: #eef3f8; line-height: 1.55; }
-    main { max-width: 980px; margin: 0 auto; padding: 28px 18px 60px; }
-    .card { background: #121923; border: 1px solid #263142; border-radius: 16px; padding: 18px; margin: 14px 0; }
-    a { color: #8bd3ff; }
-    pre { white-space: pre-wrap; word-break: break-word; background: #080b10; border: 1px solid #263142; border-radius: 12px; padding: 16px; overflow:auto; }
-    .muted { color: #a8b3c2; }
+    body{margin:0;background:#080b12;color:#eef3ff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+    .wrap{max-width:1180px;margin:auto;padding:28px}
+    .hero{border:1px solid #263247;background:linear-gradient(135deg,#10192b,#0b1020);border-radius:22px;padding:28px;margin-bottom:18px}
+    h1{margin:0 0 8px;font-size:34px}
+    h2{margin:0 0 12px;font-size:18px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+    .card{border:1px solid #263247;background:#0f1626;border-radius:18px;padding:18px}
+    .pill{display:inline-block;padding:6px 10px;border:1px solid #3d4d6b;border-radius:999px;color:#b9c8ff;margin:4px 4px 4px 0}
+    a{color:#8db7ff}
+    pre{white-space:pre-wrap;background:#070a10;border:1px solid #263247;border-radius:14px;padding:14px;overflow:auto}
+    button{background:#2c67ff;color:white;border:0;border-radius:12px;padding:10px 12px;font-weight:700}
+    textarea{width:100%;min-height:90px;border-radius:12px;background:#070a10;color:#eef3ff;border:1px solid #263247;padding:10px}
   </style>
 </head>
 <body>
-  <main>
-    <h1>Teleporte Gateway</h1>
-    <div class="card">
-      <p><strong>Source Boss:</strong> <code>public/00_LATEST_CHECKPOINT_READ_FIRST.md</code></p>
-      <p class="muted">This page does not own the rules. It reads the source-boss checkpoint file.</p>
-      <p>
-        <a href="/00_LATEST_CHECKPOINT_READ_FIRST.md">Open boss file</a> ·
-        <a href="/api/current-rules">Current rules API</a> ·
-        <a href="/api/latest">Latest API</a>
-      </p>
-    </div>
-    <div class="card">
-      <h2>Current Boss File Content</h2>
-      <pre id="boss">Loading...</pre>
-    </div>
+  <main class="wrap">
+    <section class="hero">
+      <div class="pill">Teleporte</div>
+      <div class="pill">Command Center</div>
+      <div class="pill">Source Boss Active</div>
+      <h1>Teleporte Landing Command Center</h1>
+      <p id="mission">Loading mission...</p>
+    </section>
+
+    <section class="grid">
+      <div class="card"><h2>Project Health</h2><p id="health">Loading...</p></div>
+      <div class="card"><h2>Next Best Action</h2><p id="nextBestAction">Loading...</p></div>
+      <div class="card"><h2>True Blockers</h2><p id="blockers">Loading...</p></div>
+      <div class="card"><h2>Tool Buttons</h2>
+        <p><a href="/api/latest">Latest</a> · <a href="/api/current-rules">Rules</a> · <a href="/api/handoff">Handoff</a> · <a href="/api/project-status">Status</a> · <a href="/api/validate">Validate</a></p>
+      </div>
+    </section>
+
+    <section class="grid" style="margin-top:14px">
+      <div class="card"><h2>Now</h2><div id="now"></div></div>
+      <div class="card"><h2>Next</h2><div id="next"></div></div>
+      <div class="card"><h2>Waiting</h2><div id="waiting"></div></div>
+      <div class="card"><h2>Done</h2><div id="done"></div></div>
+    </section>
+
+    <section class="card" style="margin-top:14px">
+      <h2>AI Command Upgrader</h2>
+      <textarea id="cmd">Upgrade this command for Tony's iPad-first workflow.</textarea>
+      <p><button onclick="upgrade()">Upgrade Command</button></p>
+      <pre id="upgradeResult">Ready.</pre>
+    </section>
+
+    <section class="card" style="margin-top:14px">
+      <h2>Validation</h2>
+      <pre id="validation">Loading validation...</pre>
+    </section>
+
+    <section class="card" style="margin-top:14px">
+      <h2>Boss Checkpoint Preview</h2>
+      <pre id="boss">Loading boss checkpoint...</pre>
+    </section>
   </main>
-  <script>
-    fetch('/00_LATEST_CHECKPOINT_READ_FIRST.md', { cache: 'no-store' })
-      .then(r => r.text())
-      .then(t => document.getElementById('boss').textContent = t)
-      .catch(err => document.getElementById('boss').textContent = 'Failed to load boss file: ' + err);
-  </script>
+<script>
+const fillList=(id,arr)=>document.getElementById(id).innerHTML=(arr||[]).map(x=>`<div class="pill">${x}</div>`).join("")||"<p>None</p>";
+async function boot(){
+  const status=await fetch('/api/project-status').then(r=>r.json()).catch(()=>({}));
+  document.getElementById('mission').textContent=status.mission||'Teleporte command center mission unavailable.';
+  document.getElementById('health').textContent=status.health||'Unknown';
+  document.getElementById('nextBestAction').textContent=status.nextBestAction||'Review project status.';
+  document.getElementById('blockers').textContent=(status.trueBlockers&&status.trueBlockers.length)?status.trueBlockers.join(', '):'No true blockers reported.';
+  fillList('now',status.now); fillList('next',status.next); fillList('waiting',status.waiting); fillList('done',status.done);
+  document.getElementById('validation').textContent=JSON.stringify(await fetch('/api/validate').then(r=>r.json()).catch(e=>({error:String(e)})),null,2);
+  document.getElementById('boss').textContent=await fetch('/api/latest').then(r=>r.text()).catch(e=>String(e));
+}
+async function upgrade(){
+  const command=document.getElementById('cmd').value;
+  const res=await fetch('/api/command-upgrade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command})}).then(r=>r.json()).catch(e=>({error:String(e)}));
+  document.getElementById('upgradeResult').textContent=JSON.stringify(res,null,2);
+}
+boot();
+</script>
 </body>
 </html>

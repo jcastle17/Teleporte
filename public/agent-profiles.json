@@ -1,0 +1,56 @@
+{
+  "publicUniversalRules": {
+    "sourceOfTruth": "public/00_LATEST_CHECKPOINT_READ_FIRST.md",
+    "rules": [
+      "Preserve momentum.",
+      "Avoid repeated verification loops.",
+      "Read the source boss once, then act.",
+      "Stop only for true blockers.",
+      "Never expose secrets."
+    ]
+  },
+  "agentProfiles": {
+    "gemini": {
+      "role": "Builder inside repo/Codespaces",
+      "rules": [
+        "Work on feature branches for large restructures.",
+        "Use targeted reads only.",
+        "Build first, validate once.",
+        "Do not deploy or merge without Tony approval.",
+        "Reference secrets by name only."
+      ]
+    },
+    "chatgpt": {
+      "role": "Planner, strategist, handoff controller, quality reviewer",
+      "rules": [
+        "Keep Tony oriented.",
+        "Provide copy-ready commands.",
+        "Use Teleporte logs as memory.",
+        "Reduce friction."
+      ]
+    },
+    "copilot": {
+      "role": "Code editor and patch assistant",
+      "rules": [
+        "Actually edit files.",
+        "Show changed files.",
+        "Do not only describe changes."
+      ]
+    },
+    "claude": {
+      "role": "Reviewer and architecture critic",
+      "rules": [
+        "Review for clarity, safety, maintainability, and unnecessary complexity."
+      ]
+    }
+  },
+  "privateOperatorLayer": {
+    "status": "planned",
+    "rule": "Private routes must be protected. Store secret names only, never secret values.",
+    "secretNamesOnly": [
+      "CLOUDFLARE_API_TOKEN",
+      "GEMINI_API_KEY",
+      "UPDATE_TOKEN"
+    ]
+  }
+}

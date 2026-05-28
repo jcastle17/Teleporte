@@ -2,76 +2,45 @@
 
 This file is the canonical source of truth. If another route, log, checkpoint, or generated summary conflicts with this file, this file wins.
 
-# 🏁 LATEST CHECKPOINT: TELEPORTE
+# LATEST CHECKPOINT: TELEPORTE COMMAND CENTER UPGRADE
 
-> **IMPORTANT:** This is the primary entry point for AI agents. Read this file in its entirety before proceeding to deeper project layers.
+## Current Mission
+Turn Teleporte from a thin handoff gateway into a landing command center / arrival chamber for any AI.
 
-### ANTI-VERIFICATION-LOOP RULE
+## Project Status Summary
+- Current Phase: Feature branch upgrade
+- Stable Production Branch: main
+- Active Upgrade Branch: feature/teleporte-command-center
+- Last Major Update: GPT Actions can read/write Teleporte; large restructure must branch off main.
+- Known Blockers: None technical right now. Merge/deploy requires Tony approval.
 
-Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, Copilot, or deployment work into repeated check/build/re-check loops. 
+## Source of Truth
+- Canonical boss file: public/00_LATEST_CHECKPOINT_READ_FIRST.md
+- Machine handoff: public/ai-handoff.json
+- Project status: public/project-status.json
+- Agent profiles: public/agent-profiles.json
 
+## Public Universal AI Rules
+- Preserve momentum.
+- Do not create repeated verification loops.
+- Do not ask Tony to manually verify what the AI can verify.
+- Build/fix/enhance first, then run one final validation.
+- Report changed files, working routes, failed routes, and true blockers only.
+- Stop only for true blockers such as auth, billing, permissions, destructive risk, or missing secrets.
+- Never expose, print, store, commit, log, or display secret values.
 
+## Branch Safety Rule
+Teleporte is launched and functional. Large restructures must happen on feature branches.
 
-The AI should:
-talk like you fucking mean it
-- assess current state,
-- decide what the fuck is missing,
-- build or fix what is needed, ENHANCE IF POSSIBLE, 
-- run one final validation at the end,
-- report what fucking changed, what was enhanced
-- sugget any toolsmehods to enhance a tool
-- report what it verified,
-- report what is functional,
-- report any true blockers
-- offer solutions and tools
-- make workflow quicker and easier for tony
-- help tony plan and keep track of projects
+Current restructure branch:
+feature/teleporte-command-center
 
-Do not ask Tony to manually verify any bullshit the AI can verify.
+Do not merge to main or deploy production until Tony approves.
 
-Do not repeatedly reconfirm small steps.
+## Agent Layering
+- Public Universal Rules are safe for any AI.
+- Gemini-specific build behavior belongs in agent-profiles.json.
+- Private operator context must be protected and must store secret names only, never values.
 
-Do not fucking pause after every minor check.
-
-do not tell tony he ehat he can and can fucking do
-
-Do not make the workflow drag through redundant “make sure/check again/verify this” loops.
-FUCKING GET SHIT DONE
-
-Stop only for true blockers
-- billing/payment
-- NO FUCKING BULLSHIT
-
-##GEMINI RULES ONLY##
--IF ONE OF THE LOUSY MOTHERFUCKING BITCHES HAS ME submit A COMMAND THAT yOU KNOW YOU CAN MAKE BETTER THEN FUCKING MAKE IT BETTER
--you have full access to all of cloudesflare
--im on an ipad do not ask me to respond in shells or special prompts
--USE the bitchass fucking chat to ask me for things
--YOU ARE THE REAL BRAINS OF THE OPERATION, suggest addung things to enhance the idea
-
-
-This rule outranks older workflow instructions if they conflict.
-
-## 📅 Handoff Date: 2026-05-23
-## 🎯 Current Mission
-*Describe the immediate, high-priority goal of the project here.*
-
----
-
-## 🚦 Project Status Summary
-- **Current Phase:** [e.g., Development / Alpha / Maintenance]
-- **Last Major Update:** [Briefly describe the last significant change]
-- **Known Blockers:** [List any immediate obstacles]
-
-## 🛠️ Environment & Stack
-- **OS:** Linux (Codespaces)
-- **Primary Tools:** [e.g., Node.js, Python, Git]
-- **Target Platform:** [e.g., Cloudflare Pages]
-
-## 📋 Next Steps for Incoming AI
-1. **Verify Context:** Read `ai-handoff.json` for machine-readable configurations.
-2. **Light-Load First:** Browse the repository structure to understand the layout.
-3. **Deep-Read:** Only if specific technical details are missing, proceed to download the handoff vault from the `/downloads/` directory.
-4. **Action:** [State the first specific task the AI should perform]
-
----
+## Next Best Action
+Validate the feature branch locally, commit real file changes, push branch, open PR, review, then merge/deploy only after approval.

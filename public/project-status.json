@@ -1,0 +1,27 @@
+{
+  "project": "Teleporte",
+  "phase": "Feature branch upgrade",
+  "health": "Stable production, command center upgrade in progress",
+  "mission": "Turn Teleporte into a landing command center and arrival chamber for any AI.",
+  "now": [
+    "Production remains safe on main",
+    "Command Center work is isolated on feature/teleporte-command-center",
+    "Source boss remains public/00_LATEST_CHECKPOINT_READ_FIRST.md"
+  ],
+  "next": [
+    "Validate feature branch locally",
+    "Open PR after real file changes are committed",
+    "Merge/deploy only after review"
+  ],
+  "waiting": [
+    "Tony approval before merge or production deploy"
+  ],
+  "blocked": [],
+  "done": [
+    "Teleporte live gateway exists",
+    "GPT Actions can read/write Teleporte",
+    "Branch safety rule established"
+  ],
+  "nextBestAction": "Commit this feature branch and review via PR before production deployment.",
+  "trueBlockers": []
+}
