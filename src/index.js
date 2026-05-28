@@ -6,7 +6,20 @@ export default {
 
     // API Routes
     if (path === "/api/latest") {
-      return handleLatest(env);
+      const bossRequest = new Request(new URL("/00_LATEST_CHECKPOINT_READ_FIRST.md", "http://internal/"));
+      const bossResponse = await env.ASSETS.fetch(bossRequest);
+      const content = await bossResponse.text();
+
+      return new Response(JSON.stringify({
+        sourceOfTruth: "public/00_LATEST_CHECKPOINT_READ_FIRST.md",
+        canonicalRule: "This file is the canonical source of truth. If another route, log, checkpoint, or generated summary conflicts with this file, this file wins.",
+        content
+      }, null, 2), {
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          "cache-control": "no-store"
+        }
+      });
     }
     if (path === "/api/logs") {
       return handleLogs(env);
@@ -398,26 +411,19 @@ async function serveStaticAsset(assetPath, env) {
   return env.ASSETS.fetch(assetRequest);
 }
 
-async function handleCurrentRules(env) {
-  try {
-    const rulesRequest = new Request(new URL("/00_LATEST_CHECKPOINT_READ_FIRST.md", "http://internal/"));
-    const rulesResponse = await env.ASSETS.fetch(rulesRequest);
-    const rulesText = await rulesResponse.text();
+async function handleCurrentRules(request, env, ctx) {
+  const bossRequest = new Request(new URL("/00_LATEST_CHECKPOINT_READ_FIRST.md", "http://internal/"));
+  const bossResponse = await env.ASSETS.fetch(bossRequest);
+  const content = await bossResponse.text();
 
-    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE([\s\S]*?)---/m;
-    const match = rulesText.match(antiVerificationLoopRuleRegex);
-
-    if (match && match[1]) {
-      return new Response(JSON.stringify({ rule: match[1].trim() }), {
-        headers: { "Content-Type": "application/json" }
-      });
-    } else {
-      return new Response(JSON.stringify({ error: "Anti-Verification-Loop Rule not found in 00_LATEST_CHECKPOINT_READ_FIRST.md" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" }
-      });
+  return new Response(JSON.stringify({
+    sourceOfTruth: "public/00_LATEST_CHECKPOINT_READ_FIRST.md",
+    canonicalRule: "This file is the canonical source of truth. If another route, log, checkpoint, or generated summary conflicts with this file, this file wins.",
+    content
+  }, null, 2), {
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store"
     }
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
-  }
+  });
 }

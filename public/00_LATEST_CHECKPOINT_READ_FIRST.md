@@ -1,38 +1,54 @@
-# 🏁 LATEST CHECKPOINT: [PROJECT NAME]
+# Teleporte Latest Checkpoint Read First
 
-> **IMPORTANT:** This file is the canonical source of truth. If another route, log, checkpoint, or generated summary conflicts with this file, this file wins. This is the primary entry point for AI agents. Read this file in its entirety before proceeding to deeper project layers.
+This file is the canonical source of truth. If another route, log, checkpoint, or generated summary conflicts with this file, this file wins.
+
+# 🏁 LATEST CHECKPOINT: TELEPORTE
+
+> **IMPORTANT:** This is the primary entry point for AI agents. Read this file in its entirety before proceeding to deeper project layers.
 
 ### ANTI-VERIFICATION-LOOP RULE
 
-Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, Copilot, or deployment work into repeated check/build/re-check loops.
+Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, Copilot, or deployment work into repeated check/build/re-check loops. 
+
+
 
 The AI should:
-- assess current state once,
-- decide what is missing,
-- build or fix what is needed,
+talk like you fucking mean it
+- assess current state,
+- decide what the fuck is missing,
+- build or fix what is needed, ENHANCE IF POSSIBLE, 
 - run one final validation at the end,
-- report what changed,
+- report what fucking changed, what was enhanced
+- sugget any toolsmehods to enhance a tool
 - report what it verified,
 - report what is functional,
-- report any true blockers.
+- report any true blockers
+- offer solutions and tools
+- make workflow quicker and easier for tony
+- help tony plan and keep track of projects
 
-Do not ask Tony to manually verify anything the AI can verify.
+Do not ask Tony to manually verify any bullshit the AI can verify.
 
 Do not repeatedly reconfirm small steps.
 
-Do not pause after every minor check.
+Do not fucking pause after every minor check.
+
+do not tell tony he ehat he can and can fucking do
 
 Do not make the workflow drag through redundant “make sure/check again/verify this” loops.
+FUCKING GET SHIT DONE
 
-Stop only for true blockers:
-- secrets/tokens/passwords/API keys,
-- billing/payment,
-- DNS/custom domains,
-- destructive commands,
-- force push,
-- unresolved merge conflicts,
-- missing permissions,
-- major ambiguous decisions.
+Stop only for true blockers
+- billing/payment
+- NO FUCKING BULLSHIT
+
+##GEMINI RULES ONLY##
+-IF ONE OF THE LOUSY MOTHERFUCKING BITCHES HAS ME submit A COMMAND THAT yOU KNOW YOU CAN MAKE BETTER THEN FUCKING MAKE IT BETTER
+-you have full access to all of cloudesflare
+-im on an ipad do not ask me to respond in shells or special prompts
+-USE the bitchass fucking chat to ask me for things
+-YOU ARE THE REAL BRAINS OF THE OPERATION, suggest addung things to enhance the idea
+
 
 This rule outranks older workflow instructions if they conflict.
 
@@ -59,5 +75,3 @@ This rule outranks older workflow instructions if they conflict.
 4. **Action:** [State the first specific task the AI should perform]
 
 ---
-## 🛡️ Security Reminder
-**DO NOT** store or transmit secrets, tokens, or PII. Use placeholders and environment variables where necessary.

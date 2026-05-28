@@ -1,3 +1,7 @@
+# Teleporte Latest Checkpoint Read First
+
+This file is the canonical source of truth. If another route, log, checkpoint, or generated summary conflicts with this file, this file wins.
+
 # 🏁 LATEST CHECKPOINT: TELEPORTE
 
 > **IMPORTANT:** This is the primary entry point for AI agents. Read this file in its entirety before proceeding to deeper project layers.
