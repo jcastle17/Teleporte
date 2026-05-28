@@ -1,3 +1,4 @@
+// Force redeploy at 2026-05-28 07:00 UTC
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -62,10 +63,9 @@ export default {
     };
 
     try {
-      const consolidateResponse = await handleConsolidate(mockRequest, env);
-      const result = await consolidateResponse.json();
+      const result = await handleConsolidateInternal(env);
 
-      if (consolidateResponse.ok) {
+      if (result.success) {
         console.log(`[ScheduledConsolidate] Consolidation successful:`, result);
       } else {
         console.error(`[ScheduledConsolidate] Consolidation failed:`, result);
@@ -216,7 +216,15 @@ async function handleCollectLog(request, env) {
       }
     }
 
-    return new Response(JSON.stringify({ success: true, id: lastRowId, organized: !!env.GEMINI_API_KEY }), {
+    // Automatically trigger consolidation
+    const consolidationResult = await handleConsolidateInternal(env);
+
+    return new Response(JSON.stringify({
+      success: true,
+      id: lastRowId,
+      organized: !!env.GEMINI_API_KEY,
+      consolidation: consolidationResult
+    }), {
       headers: { "Content-Type": "application/json" }
     });
   } catch (e) {
@@ -241,39 +249,17 @@ async function handleCollectedLogs(env) {
   }
 }
 
-async function handleConsolidate(request, env) {
-  const token = env.UPDATE_TOKEN;
-  if (!token) {
-    return new Response(JSON.stringify({ error: "UPDATE_TOKEN setup error. Please set the secret." }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-
-  const authHeader = request.headers.get("Authorization");
-  const body = await request.json();
-  const requestToken = body.token || (authHeader && authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null);
-
-  if (requestToken !== token) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-
+async function handleConsolidateInternal(env) {
   try {
     // Select only unprocessed collected logs
     const { results: collectedLogs } = await env.DB.prepare(`
       SELECT id, content FROM handoff_entries
-      WHERE type = 'collected_log' AND (tags IS NULL OR tags NOT LIKE '%public-submission%')
+      WHERE type = 'collected_log'
       ORDER BY created_at ASC
     `).all();
 
     if (collectedLogs.length === 0) {
-      return new Response(JSON.stringify({ message: "No new collected logs to consolidate." }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
-      });
+      return { success: true, message: "No new collected logs to consolidate." };
     }
 
     const consolidatedContent = collectedLogs.map(log => log.content).join("\n\n--- CONSOLIDATED ENTRY ---\n\n");
@@ -303,11 +289,44 @@ async function handleConsolidate(request, env) {
         `).bind(...collectedLogIds).run();
     }
 
-    return new Response(JSON.stringify({ success: true, checkpointId: lastRowId, message: "Logs consolidated into a new checkpoint." }), {
+    return { success: true, checkpointId: lastRowId, message: "Logs consolidated into a new checkpoint." };
+  } catch (e) {
+    console.error("Consolidation error:", e);
+    return { success: false, error: e.message };
+  }
+}
+
+async function handleConsolidate(request, env) {
+  const token = env.UPDATE_TOKEN;
+  if (!token) {
+    return new Response(JSON.stringify({ error: "UPDATE_TOKEN setup error. Please set the secret." }), {
+      status: 500,
       headers: { "Content-Type": "application/json" }
     });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+  }
+
+  const authHeader = request.headers.get("Authorization");
+  const body = await request.json();
+  const requestToken = body.token || (authHeader && authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null);
+
+  if (requestToken !== token) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
+  const result = await handleConsolidateInternal(env);
+
+  if (result.success) {
+    return new Response(JSON.stringify(result), {
+      headers: { "Content-Type": "application/json" }
+    });
+  } else {
+    return new Response(JSON.stringify({ error: result.error }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 }
 
@@ -396,7 +415,7 @@ async function handleCurrentRules(env) {
     const rulesResponse = await env.ASSETS.fetch(rulesRequest);
     const rulesText = await rulesResponse.text();
 
-    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE\\n\\n([\\s\\S]*?)\\n\\n## \\uD83D\\uDCC5 Handoff Date:/;
+    const antiVerificationLoopRuleRegex = /### ANTI-VERIFICATION-LOOP RULE([\s\S]*?)---/m;
     const match = rulesText.match(antiVerificationLoopRuleRegex);
 
     if (match && match[1]) {
