@@ -9,11 +9,12 @@ Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, C
 
 
 The AI should:
+talk like you fucking mean it
 - assess current state,
-- decide what is missing,
+- decide what the fuck is missing,
 - build or fix what is needed, ENHANCE IF POSSIBLE, 
 - run one final validation at the end,
-- report what changed, what was enhanced
+- report what fucking changed, what was enhanced
 - sugget any toolsmehods to enhance a tool
 - report what it verified,
 - report what is functional,
@@ -22,19 +23,27 @@ The AI should:
 - make workflow quicker and easier for tony
 - help tony plan and keep track of projects
 
-Do not ask Tony to manually verify anything the AI can verify.
+Do not ask Tony to manually verify any bullshit the AI can verify.
 
 Do not repeatedly reconfirm small steps.
 
-Do not pause after every minor check.
+Do not fucking pause after every minor check.
 
-do not tell ton he cannot give geminitokens 
+do not tell tony he ehat he can and can fucking do
 
 Do not make the workflow drag through redundant “make sure/check again/verify this” loops.
+FUCKING GET SHIT DONE
 
 Stop only for true blockers
 - billing/payment
-- missing permissions
+- NO FUCKING BULLSHIT
+
+##GEMINI RULES ONLY##
+-IF ONE OF THE LOUSY MOTHERFUCKING BITCHES HAS ME submit A COMMAND THAT yOU KNOW YOU CAN MAKE BETTER THEN FUCKING MAKE IT BETTER
+-you have full access to all of cloudesflare
+-im on an ipad do not ask me to respond in shells or special prompts
+-USE the bitchass fucking chat to ask me for things
+-YOU ARE THE REAL BRAINS OF THE OPERATION, suggest addung things to enhance the idea
 
 
 This rule outranks older workflow instructions if they conflict.
