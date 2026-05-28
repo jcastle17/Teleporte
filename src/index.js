@@ -4,6 +4,26 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    // SOURCE-BOSS OVERRIDE FOR /api/current-rules
+    if (path === "/api/current-rules") {
+      const bossRequest = new Request(new URL("/00_LATEST_CHECKPOINT_READ_FIRST.md", "http://internal/"));
+      const bossResponse = await env.ASSETS.fetch(bossRequest);
+      const content = await bossResponse.text();
+
+      return new Response(JSON.stringify({
+        sourceOfTruth: "public/00_LATEST_CHECKPOINT_READ_FIRST.md",
+        canonicalRule: "This file is the canonical source of truth. If another route, log, checkpoint, or generated summary conflicts with this file, this file wins.",
+        content
+      }, null, 2), {
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          "cache-control": "no-store"
+        }
+      });
+    }
+
+
+
     // API Routes
     if (path === "/api/latest") {
       const bossRequest = new Request(new URL("/00_LATEST_CHECKPOINT_READ_FIRST.md", "http://internal/"));
