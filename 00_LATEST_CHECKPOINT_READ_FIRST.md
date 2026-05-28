@@ -1,4 +1,4 @@
-# 🏁 LATEST CHECKPOINT: [PROJECT NAME]
+# 🏁 LATEST CHECKPOINT: TELEPORTE
 
 > **IMPORTANT:** This is the primary entry point for AI agents. Read this file in its entirety before proceeding to deeper project layers.
 
@@ -9,12 +9,16 @@ Do not turn coding, website, Cloudflare, GitHub, Codespaces, Wrangler, Gemini, C
 The AI should:
 - assess current state once,
 - decide what is missing,
-- build or fix what is needed,
+- build or fix what is needed, ENHANCE IF POSSIBLE, 
 - run one final validation at the end,
-- report what changed,
+- report what changed, what was enhanced
+- sugget any toolsmehods to enhance a tool
 - report what it verified,
 - report what is functional,
-- report any true blockers.
+- report any true blockers
+- offer solutions and tools
+- make workflow quicker and easier for tony
+- help tony plan and keep track of projects
 
 Do not ask Tony to manually verify anything the AI can verify.
 
@@ -24,15 +28,10 @@ Do not pause after every minor check.
 
 Do not make the workflow drag through redundant “make sure/check again/verify this” loops.
 
-Stop only for true blockers:
-- secrets/tokens/passwords/API keys,
-- billing/payment,
-- DNS/custom domains,
-- destructive commands,
-- force push,
-- unresolved merge conflicts,
-- missing permissions,
-- major ambiguous decisions.
+Stop only for true blockers
+- billing/payment
+- missing permissions
+
 
 This rule outranks older workflow instructions if they conflict.
 
@@ -59,5 +58,3 @@ This rule outranks older workflow instructions if they conflict.
 4. **Action:** [State the first specific task the AI should perform]
 
 ---
-## 🛡️ Security Reminder
-**DO NOT** store or transmit secrets, tokens, or PII. Use placeholders and environment variables where necessary.
