@@ -1,27 +1,30 @@
 {
   "project": "Teleporte",
-  "phase": "Feature branch upgrade",
-  "health": "Stable production, command center upgrade in progress",
-  "mission": "Turn Teleporte into a landing command center and arrival chamber for any AI.",
+  "phase": "Live command center / post-merge validation",
+  "health": "Live and operational",
+  "mission": "Preserve AI project continuity through a landing command center / arrival chamber.",
   "now": [
-    "Production remains safe on main",
-    "Command Center work is isolated on feature/teleporte-command-center",
-    "Source boss remains public/00_LATEST_CHECKPOINT_READ_FIRST.md"
+    "Teleporte Command Center is live",
+    "Key public routes are active",
+    "Source boss checkpoint updated for current state"
   ],
   "next": [
-    "Validate feature branch locally",
-    "Open PR after real file changes are committed",
-    "Merge/deploy only after review"
+    "Use /teleport/ as the main AI start link",
+    "For future changes, branch first, review, then deploy after approval",
+    "Add a stronger Resume Now card or /api/next endpoint later"
   ],
-  "waiting": [
-    "Tony approval before merge or production deploy"
-  ],
+  "waiting": [],
   "blocked": [],
   "done": [
-    "Teleporte live gateway exists",
-    "GPT Actions can read/write Teleporte",
-    "Branch safety rule established"
+    "Command Center UI created",
+    "Agent profiles created",
+    "Project status created",
+    "Handoff JSON created",
+    "Backend routes wired",
+    "OpenAPI updated",
+    "Live route validation completed"
   ],
-  "nextBestAction": "Commit this feature branch and review via PR before production deployment.",
-  "trueBlockers": []
+  "nextBestAction": "Use the main Teleporte link and validate with /api/validate before starting new work.",
+  "trueBlockers": [],
+  "updatedAt": "2026-05-29T03:45:23.732770Z"
 }
