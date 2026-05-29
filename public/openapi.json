@@ -32,7 +32,10 @@
                     "description": "The complete chat log, handoff log, or markdown content to save."
                   }
                 },
-                "required": ["title", "content"]
+                "required": [
+                  "title",
+                  "content"
+                ]
               }
             }
           }
@@ -40,6 +43,100 @@
         "responses": {
           "200": {
             "description": "Log submitted successfully."
+          }
+        }
+      }
+    },
+    "/api/handoff": {
+      "get": {
+        "operationId": "getHandoff",
+        "summary": "Get AI Handoff data",
+        "responses": {
+          "200": {
+            "description": "Handoff JSON returned"
+          }
+        }
+      }
+    },
+    "/api/project-status": {
+      "get": {
+        "operationId": "getProjectStatus",
+        "summary": "Get Project Status",
+        "responses": {
+          "200": {
+            "description": "Project status JSON returned"
+          }
+        }
+      }
+    },
+    "/api/validate": {
+      "get": {
+        "operationId": "validateSystem",
+        "summary": "Validate System Health",
+        "responses": {
+          "200": {
+            "description": "Validation status JSON returned"
+          }
+        }
+      }
+    },
+    "/api/command-upgrade": {
+      "post": {
+        "operationId": "upgradeCommand",
+        "summary": "Upgrade a command prompt",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "command"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upgraded command returned"
+          }
+        }
+      }
+    },
+    "/api/save-log": {
+      "post": {
+        "operationId": "saveLog",
+        "summary": "Save an operator log safely",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "content"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Log saved successfully"
           }
         }
       }

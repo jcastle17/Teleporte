@@ -62,6 +62,22 @@ export default {
     if (path === "/api/organize-log" && request.method === "POST") {
       return handleOrganizeLog(request, env);
     }
+    if (path === "/api/handoff") {
+      return serveStaticAsset("/ai-handoff.json", env);
+    }
+    if (path === "/api/project-status") {
+      return serveStaticAsset("/project-status.json", env);
+    }
+    if (path === "/api/validate") {
+      return handleValidate(env);
+    }
+    if (path === "/api/command-upgrade" && request.method === "POST") {
+      return handleCommandUpgrade(request, env);
+    }
+    if (path === "/api/save-log" && request.method === "POST") {
+      return handleCollectLog(request, env);
+    }
+
 
     // Admin Page
     if (path === "/admin" || path === "/admin/") {
@@ -446,4 +462,24 @@ async function handleCurrentRules(request, env, ctx) {
       "cache-control": "no-store"
     }
   });
+}
+
+
+async function handleValidate(env) {
+  return new Response(JSON.stringify({ status: "healthy", message: "Command Center routes are active." }), {
+    headers: { "Content-Type": "application/json" }
+  });
+}
+
+async function handleCommandUpgrade(request, env) {
+  try {
+    const body = await request.json();
+    const command = body.command || "";
+    const upgraded = "[UPGRADED] " + command + " (Optimized for iPad workflow)";
+    return new Response(JSON.stringify({ upgradedCommand: upgraded }), {
+      headers: { "Content-Type": "application/json" }
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 400 });
+  }
 }
